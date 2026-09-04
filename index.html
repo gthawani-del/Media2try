@@ -6,56 +6,73 @@
   <title>TEZZ — Switch On.</title>
   <meta name="description" content="TEZZ cinematic product experience." />
   <style>
-    :root{--gold:#d8a84a;--white:#fff;--muted:rgba(255,255,255,.46)}
+    :root{--yellow:#ffd326;--white:#f7f7f2;--muted:rgba(255,255,255,.44);--black:#030303}
     *{box-sizing:border-box}
-    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#030303;color:#fff;font-family:Arial,Helvetica,sans-serif}
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--black);color:#fff;font-family:Arial,Helvetica,sans-serif}
     body{overscroll-behavior:none;touch-action:none}
     button{font:inherit}
-
-    .stage{position:fixed;inset:0;overflow:hidden;background:#030303}
-    .video-layer{position:absolute;inset:0;opacity:0;transition:opacity .55s ease;pointer-events:none;will-change:opacity}
+    .stage{position:fixed;inset:0;overflow:hidden;background:var(--black);isolation:isolate}
+    .video-layer{position:absolute;inset:0;opacity:0;transition:opacity .52s cubic-bezier(.2,.7,.2,1);pointer-events:none;will-change:opacity}
     .video-layer.active{opacity:1}
-    video{width:100%;height:100%;display:block;object-fit:cover;object-position:center;background:#030303}
-    .shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.14),rgba(0,0,0,.02) 47%,rgba(0,0,0,.34))}
+    video{width:100%;height:100%;display:block;object-fit:cover;object-position:center;background:var(--black)}
+    .shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.01) 42%,rgba(0,0,0,.4));z-index:3}
+    .grain{position:absolute;inset:-50%;z-index:4;pointer-events:none;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");animation:grain .24s steps(2) infinite}
+    @keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-2%,1%)}50%{transform:translate(1%,-2%)}75%{transform:translate(2%,2%)}100%{transform:translate(-1%,-1%)}}
+    .flash{position:absolute;left:0;right:0;top:50%;height:2px;z-index:10;background:var(--yellow);box-shadow:0 0 28px rgba(255,211,38,.85);transform:scaleX(0);transform-origin:left;opacity:0;pointer-events:none}
+    .flash.go{animation:flash .5s cubic-bezier(.2,.8,.2,1)}
+    @keyframes flash{0%{opacity:0;transform:scaleX(0)}25%{opacity:1;transform:scaleX(1)}100%{opacity:0;transform:scaleX(1)}}
 
-    .copy{position:absolute;inset:0;pointer-events:none}
-    .message{position:absolute;opacity:0;transform:translateY(18px);transition:opacity .45s ease,transform .45s ease}
+    .copy{position:absolute;inset:0;z-index:8;pointer-events:none}
+    .message{position:absolute;opacity:0;transform:translateY(20px);transition:opacity .42s ease,transform .42s ease;will-change:transform,opacity}
     .message.show{opacity:1;transform:translateY(0)}
     .hero-copy,.final-copy{left:6vw;bottom:8vh}
-    .hero-copy h1,.final-copy h1{margin:0;font-size:clamp(58px,10vw,150px);line-height:.82;letter-spacing:-.06em;font-weight:900}
-    .hero-copy p,.final-copy p{margin:14px 0 0;font-size:clamp(17px,2vw,30px);letter-spacing:.24em;font-weight:700}
-    .charge-copy{left:6vw;top:50%;transform:translateY(calc(-50% + 18px))}
+    .eyebrow{display:inline-flex;align-items:center;gap:9px;margin-bottom:13px;font-size:10px;font-weight:900;letter-spacing:.22em;color:#0a0a0a;background:var(--yellow);padding:7px 10px 6px;transform:rotate(-1.2deg);box-shadow:4px 4px 0 rgba(0,0,0,.2)}
+    .hero-copy h1,.final-copy h1{margin:0;font-family:Impact,'Arial Narrow Bold',Arial,sans-serif;font-size:clamp(64px,11vw,166px);line-height:.78;letter-spacing:-.045em;font-weight:900;text-transform:uppercase;text-shadow:0 4px 24px rgba(0,0,0,.25)}
+    .hero-copy p,.final-copy p{margin:15px 0 0;font-size:clamp(18px,2.1vw,31px);letter-spacing:.22em;font-weight:900}
+    .marker{position:relative;display:inline-block;z-index:0}
+    .marker::before{content:"";position:absolute;left:-3%;right:-3%;bottom:.08em;height:.36em;background:var(--yellow);z-index:-1;transform:rotate(-1.5deg);opacity:.95}
+    .micro{margin-top:18px;font-size:9px;letter-spacing:.22em;font-weight:700;color:rgba(255,255,255,.7)}
+    .charge-copy{left:6vw;top:50%;transform:translateY(calc(-50% + 20px))}
     .charge-copy.show{transform:translateY(-50%)}
-    .charge-copy div{font-size:clamp(34px,6vw,88px);font-weight:900;line-height:.9;letter-spacing:-.04em}
-    .release-copy{left:50%;top:10vh;width:90vw;text-align:center;transform:translateX(-50%) translateY(18px)}
+    .charge-copy .word{display:block;width:max-content;font-family:Impact,'Arial Narrow Bold',Arial,sans-serif;font-size:clamp(42px,7vw,105px);font-weight:900;line-height:.82;letter-spacing:-.03em;text-transform:uppercase}
+    .charge-copy .word:nth-child(2){margin-left:4vw}.charge-copy .word:nth-child(3){margin-left:1.5vw}.charge-copy .word:nth-child(4){margin-left:6vw}
+    .charge-copy .word.hot{color:#0a0a0a;background:var(--yellow);padding:0 .12em;transform:rotate(-1deg)}
+    .release-copy{left:50%;top:11vh;width:90vw;text-align:center;transform:translateX(-50%) translateY(20px)}
     .release-copy.show{transform:translateX(-50%) translateY(0)}
-    .release-copy div{font-size:clamp(31px,5vw,76px);font-weight:900;letter-spacing:-.04em}
-    .cta{display:inline-block;margin-top:20px;padding:13px 21px;border:1px solid rgba(255,255,255,.72);border-radius:999px;font-size:13px;font-weight:800;letter-spacing:.14em;background:rgba(0,0,0,.22);backdrop-filter:blur(8px)}
+    .release-copy .eyebrow{margin-bottom:18px}
+    .release-copy .headline{font-family:Impact,'Arial Narrow Bold',Arial,sans-serif;font-size:clamp(38px,6vw,94px);font-weight:900;letter-spacing:-.025em;line-height:.88;text-transform:uppercase}
+    .cta{display:inline-block;margin-top:22px;padding:14px 21px;border:0;border-radius:0;font-size:12px;font-weight:900;letter-spacing:.15em;background:var(--yellow);color:#0a0a0a;transform:rotate(-1deg);box-shadow:5px 5px 0 rgba(255,255,255,.16)}
 
-    .rail{position:absolute;right:max(18px,env(safe-area-inset-right));top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;gap:18px;align-items:flex-end}
-    .rail button{appearance:none;border:0;background:transparent;color:var(--muted);padding:0;display:flex;align-items:center;gap:10px;cursor:pointer;letter-spacing:.13em;font-size:11px;font-weight:700;transition:color .25s ease,transform .25s ease}
-    .rail button::before{content:"";width:18px;height:1px;background:currentColor;transition:width .25s ease,background .25s ease}
-    .rail button.active{color:var(--white);transform:translateX(-4px)}
-    .rail button.active::before{width:36px;background:var(--gold)}
-    .rail .label{opacity:0;transform:translateX(6px);transition:opacity .25s ease,transform .25s ease}
-    .rail button:hover .label,.rail button.active .label{opacity:1;transform:none}
+    .rail{position:absolute;right:max(18px,env(safe-area-inset-right));top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;gap:12px;align-items:flex-end}
+    .rail button{appearance:none;border:0;background:transparent;color:var(--muted);padding:4px 0;display:flex;align-items:center;gap:9px;cursor:pointer;letter-spacing:.14em;font-size:10px;font-weight:900;transition:color .25s ease,transform .25s ease}
+    .rail button::before{content:"";width:17px;height:1px;background:currentColor;transition:width .25s ease,background .25s ease}
+    .rail button.active{color:#0a0a0a;background:var(--yellow);padding:7px 9px;transform:translateX(-4px) rotate(-1deg)}
+    .rail button.active::before{width:28px;background:#0a0a0a}
+    .rail .label{opacity:0;max-width:0;overflow:hidden;white-space:nowrap;transition:opacity .22s ease,max-width .28s ease}
+    .rail button:hover .label,.rail button.active .label{opacity:1;max-width:80px}
 
-    .counter{position:absolute;left:max(18px,env(safe-area-inset-left));top:max(18px,env(safe-area-inset-top));z-index:20;font-size:11px;letter-spacing:.22em;color:rgba(255,255,255,.72)}
-    .hint{position:absolute;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;font-size:10px;letter-spacing:.18em;color:rgba(255,255,255,.56);white-space:nowrap}
+    .counter{position:absolute;left:max(18px,env(safe-area-inset-left));top:max(18px,env(safe-area-inset-top));z-index:20;font-size:10px;font-weight:900;letter-spacing:.2em;color:rgba(255,255,255,.72)}
+    .sound{position:absolute;right:max(18px,env(safe-area-inset-right));top:max(18px,env(safe-area-inset-top));z-index:30;appearance:none;border:1px solid rgba(255,255,255,.28);background:rgba(0,0,0,.25);backdrop-filter:blur(10px);color:#fff;padding:9px 11px;font-size:9px;font-weight:900;letter-spacing:.16em;cursor:pointer}
+    .sound.on{background:var(--yellow);color:#0a0a0a;border-color:var(--yellow)}
+    .sound-prompt{position:absolute;left:50%;top:max(18px,env(safe-area-inset-top));transform:translateX(-50%);z-index:25;background:var(--yellow);color:#0a0a0a;padding:8px 11px;font-size:9px;font-weight:900;letter-spacing:.16em;pointer-events:none;animation:pulse 1.6s ease-in-out infinite;transition:opacity .3s ease}
+    .sound-prompt.hide{opacity:0}
+    @keyframes pulse{50%{transform:translateX(-50%) scale(1.04)}}
+    .hint{position:absolute;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;font-size:9px;font-weight:800;letter-spacing:.19em;color:rgba(255,255,255,.54);white-space:nowrap}
 
     @media(max-width:700px){
-      .hero-copy,.final-copy,.charge-copy{left:6vw}
+      .hero-copy,.final-copy,.charge-copy{left:5.5vw}
       .release-copy{top:8vh}
-      .rail{right:12px;gap:16px}
+      .rail{right:10px;gap:11px}
+      .rail button{font-size:9px}
       .rail .label{display:none}
-      .rail button::before{width:13px}
-      .rail button.active::before{width:26px}
-      .hint{font-size:9px}
+      .rail button.active{padding:6px 7px}
+      .rail button::before{width:11px}.rail button.active::before{width:18px}
+      .sound{right:10px;top:max(10px,env(safe-area-inset-top));padding:8px 9px}
+      .sound-prompt{top:max(10px,env(safe-area-inset-top));font-size:8px}
+      .micro{font-size:8px}
+      .hint{font-size:8px}
     }
-
-    @media(prefers-reduced-motion:reduce){
-      .video-layer,.message,.rail button{transition:none}
-    }
+    @media(prefers-reduced-motion:reduce){.video-layer,.message,.rail button{transition:none}.grain{animation:none}.flash{display:none}}
   </style>
 </head>
 <body>
@@ -65,16 +82,36 @@
     <div class="video-layer"><video id="v3" src="./Tezz%20video3.mp4" muted playsinline preload="auto"></video></div>
     <div class="video-layer"><video id="v4" src="./Tezz%20video4.mp4" muted playsinline preload="auto"></video></div>
 
-    <div class="shade"></div>
+    <div class="shade"></div><div class="grain"></div><div class="flash" id="flash"></div>
 
     <div class="copy" aria-hidden="true">
-      <div class="message hero-copy show" id="m1"><h1>TEZZ</h1><p>SWITCH ON.</p></div>
-      <div class="message charge-copy" id="m2"><div>HIGHER</div><div>FURTHER</div><div>FASTER</div><div>BRIGHTER</div></div>
-      <div class="message release-copy" id="m3"><div>UNLEASH THE CHARGE</div></div>
-      <div class="message final-copy" id="m4"><h1>TEZZ</h1><p>SWITCH ON.</p><span class="cta">TRY TEZZ</span></div>
+      <div class="message hero-copy show" id="m1">
+        <span class="eyebrow">01 / REVEAL</span>
+        <h1>TEZZ</h1>
+        <p>SWITCH <span class="marker">ON.</span></p>
+        <div class="micro">250 ML / ENERGY SYSTEM / NATURAL CAFFEINE</div>
+      </div>
+      <div class="message charge-copy" id="m2">
+        <span class="eyebrow">02 / CHARGE</span>
+        <span class="word">HIGHER</span><span class="word hot">FURTHER</span><span class="word">FASTER</span><span class="word">BRIGHTER</span>
+        <div class="micro">B VITAMINS / ELECTROLYTES / ZERO HESITATION</div>
+      </div>
+      <div class="message release-copy" id="m3">
+        <span class="eyebrow">03 / RELEASE</span>
+        <div class="headline">UNLEASH THE <span class="marker">CHARGE</span></div>
+      </div>
+      <div class="message final-copy" id="m4">
+        <span class="eyebrow">04 / HERO</span>
+        <h1>TEZZ</h1>
+        <p>SWITCH <span class="marker">ON.</span></p>
+        <span class="cta">TRY TEZZ</span>
+        <div class="micro">OPEN / CHARGED / READY</div>
+      </div>
     </div>
 
     <div class="counter" id="counter">01 / 04</div>
+    <button class="sound" id="soundButton" aria-pressed="false">SOUND ON</button>
+    <div class="sound-prompt" id="soundPrompt">TAP FOR SOUND ⚡</div>
 
     <nav class="rail" aria-label="TEZZ chapters">
       <button class="active" data-index="0" aria-label="Reveal"><span>01</span><span class="label">REVEAL</span></button>
@@ -87,83 +124,75 @@
   </main>
 
   <script>
-    const videos = [v1,v2,v3,v4];
-    const layers = [...document.querySelectorAll('.video-layer')];
-    const messages = [m1,m2,m3,m4];
-    const buttons = [...document.querySelectorAll('.rail button')];
-    const counter = document.getElementById('counter');
+    const videos=[v1,v2,v3,v4];
+    const layers=[...document.querySelectorAll('.video-layer')];
+    const messages=[m1,m2,m3,m4];
+    const buttons=[...document.querySelectorAll('.rail button')];
+    const counter=document.getElementById('counter');
+    const soundButton=document.getElementById('soundButton');
+    const soundPrompt=document.getElementById('soundPrompt');
+    const flash=document.getElementById('flash');
+    let active=0,switching=false,touchStartY=0,wheelLock=false;
+    let soundOn=sessionStorage.getItem('tezzSound')==='on';
 
-    let active = 0;
-    let switching = false;
-    let touchStartY = 0;
-    let wheelLock = false;
+    videos.forEach((video,i)=>{video.playsInline=true;video.muted=!soundOn;video.volume=1;video.pause();if(i!==0)video.currentTime=0});
 
-    videos.forEach((video,i) => {
-      video.muted = true;
-      video.playsInline = true;
-      video.pause();
-      if (i !== 0) video.currentTime = 0;
-    });
-
-    function playFromStart(video){
-      try{ video.currentTime = 0; }catch(e){}
-      const p = video.play();
-      if (p && p.catch) p.catch(()=>{});
+    function syncSoundUI(){
+      soundButton.textContent=soundOn?'SOUND OFF':'SOUND ON';
+      soundButton.classList.toggle('on',soundOn);
+      soundButton.setAttribute('aria-pressed',String(soundOn));
+      soundPrompt.classList.toggle('hide',soundOn);
+      videos.forEach(v=>v.muted=!soundOn);
     }
 
+    function playFromStart(video){
+      try{video.currentTime=0}catch(e){}
+      video.muted=!soundOn;
+      const p=video.play();if(p&&p.catch)p.catch(()=>{});
+    }
+
+    function fireFlash(){flash.classList.remove('go');void flash.offsetWidth;flash.classList.add('go')}
+
     function goTo(index){
-      index = Math.max(0,Math.min(videos.length-1,index));
-      if(index === active || switching) return;
-
-      switching = true;
-      const old = active;
-      active = index;
-
+      index=Math.max(0,Math.min(videos.length-1,index));
+      if(index===active||switching)return;
+      switching=true;const old=active;active=index;
       videos[old].pause();
+      fireFlash();
       layers.forEach((layer,i)=>layer.classList.toggle('active',i===index));
       messages.forEach((message,i)=>message.classList.toggle('show',i===index));
       buttons.forEach((button,i)=>button.classList.toggle('active',i===index));
-      counter.textContent = String(index+1).padStart(2,'0') + ' / 04';
-
+      counter.textContent=String(index+1).padStart(2,'0')+' / 04';
       playFromStart(videos[index]);
-      setTimeout(()=>{switching=false},600);
+      setTimeout(()=>{switching=false},560);
     }
 
-    buttons.forEach(button=>{
-      button.addEventListener('click',()=>goTo(Number(button.dataset.index)));
+    async function enableSound(){
+      soundOn=true;sessionStorage.setItem('tezzSound','on');syncSoundUI();
+      try{await videos[active].play()}catch(e){}
+    }
+
+    function disableSound(){soundOn=false;sessionStorage.setItem('tezzSound','off');syncSoundUI()}
+
+    soundButton.addEventListener('click',e=>{e.stopPropagation();soundOn?disableSound():enableSound()});
+    buttons.forEach(button=>button.addEventListener('click',()=>goTo(Number(button.dataset.index))));
+
+    window.addEventListener('wheel',e=>{e.preventDefault();if(wheelLock||switching||Math.abs(e.deltaY)<8)return;wheelLock=true;goTo(active+(e.deltaY>0?1:-1));setTimeout(()=>wheelLock=false,800)},{passive:false});
+    window.addEventListener('touchstart',e=>{touchStartY=e.touches[0].clientY},{passive:true});
+    window.addEventListener('touchend',e=>{const dy=touchStartY-e.changedTouches[0].clientY;if(Math.abs(dy)>42)goTo(active+(dy>0?1:-1))},{passive:true});
+    window.addEventListener('keydown',e=>{if(['ArrowDown','PageDown','ArrowRight'].includes(e.key))goTo(active+1);if(['ArrowUp','PageUp','ArrowLeft'].includes(e.key))goTo(active-1);if(e.key==='Home')goTo(0);if(e.key==='End')goTo(3)});
+
+    document.getElementById('stage').addEventListener('pointermove',e=>{
+      if(window.matchMedia('(pointer:fine)').matches){
+        const x=(e.clientX/window.innerWidth-.5)*10,y=(e.clientY/window.innerHeight-.5)*7;
+        messages.forEach((m,i)=>{if(i===active)m.style.transform=`translate(${x}px,${y}px)`});
+      }
     });
+    document.getElementById('stage').addEventListener('pointerleave',()=>messages.forEach(m=>m.style.transform=''));
 
-    window.addEventListener('wheel',e=>{
-      e.preventDefault();
-      if(wheelLock || switching || Math.abs(e.deltaY)<8) return;
-      wheelLock = true;
-      goTo(active + (e.deltaY>0 ? 1 : -1));
-      setTimeout(()=>{wheelLock=false},850);
-    },{passive:false});
-
-    window.addEventListener('touchstart',e=>{
-      touchStartY = e.touches[0].clientY;
-    },{passive:true});
-
-    window.addEventListener('touchend',e=>{
-      const dy = touchStartY - e.changedTouches[0].clientY;
-      if(Math.abs(dy)>42) goTo(active + (dy>0 ? 1 : -1));
-    },{passive:true});
-
-    window.addEventListener('keydown',e=>{
-      if(['ArrowDown','PageDown','ArrowRight'].includes(e.key)) goTo(active+1);
-      if(['ArrowUp','PageUp','ArrowLeft'].includes(e.key)) goTo(active-1);
-      if(e.key==='Home') goTo(0);
-      if(e.key==='End') goTo(3);
-    });
-
-    // Start the first muted cinematic clip when allowed; otherwise first user gesture starts it.
-    const firstPlay = videos[0].play();
-    if(firstPlay && firstPlay.catch) firstPlay.catch(()=>{});
-
-    window.addEventListener('pointerdown',()=>{
-      if(videos[active].paused) videos[active].play().catch(()=>{});
-    },{once:true});
+    syncSoundUI();
+    const firstPlay=videos[0].play();if(firstPlay&&firstPlay.catch)firstPlay.catch(()=>{});
+    window.addEventListener('pointerdown',()=>{if(videos[active].paused)videos[active].play().catch(()=>{})},{once:true});
   </script>
 </body>
 </html>
