@@ -6,115 +6,137 @@
 <title>TEZZ — Switch On.</title>
 <meta name="description" content="TEZZ cinematic product experience." />
 <style>
-:root{--yellow:#ffd326;--white:#fff;--black:#030303}
+:root{--gold:#f3bf45;--ivory:#eadfc9;--black:#030303;--muted:rgba(234,223,201,.58)}
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--black);color:#fff;font-family:Arial,Helvetica,sans-serif}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--black);color:var(--ivory);font-family:Arial,Helvetica,sans-serif}
 body{overscroll-behavior:none;touch-action:none}
 button{font:inherit}
 .stage{position:fixed;inset:0;overflow:hidden;background:var(--black);isolation:isolate}
-.video-layer{position:absolute;inset:0;opacity:0;transform:scale(1.006);filter:blur(1.5px);transition:opacity .65s cubic-bezier(.22,.61,.36,1),transform .9s cubic-bezier(.22,.61,.36,1),filter .65s ease;pointer-events:none;will-change:opacity,transform,filter}
+.video-layer{position:absolute;inset:0;opacity:0;transform:scale(1.004);filter:blur(1px);transition:opacity .7s cubic-bezier(.22,.61,.36,1),transform .95s cubic-bezier(.22,.61,.36,1),filter .7s ease;pointer-events:none;will-change:opacity,transform,filter}
 .video-layer.active{opacity:1;transform:scale(1);filter:blur(0)}
-video{width:100%;height:100%;display:block;object-fit:cover;object-position:center;background:#030303}
-.shade{position:absolute;inset:0;z-index:3;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.10),rgba(0,0,0,0) 42%,rgba(0,0,0,.24))}
-.grain{position:absolute;inset:-35%;z-index:4;pointer-events:none;opacity:.015;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.75'/%3E%3C/svg%3E");animation:grain .5s steps(2) infinite}
-@keyframes grain{0%{transform:translate(0)}50%{transform:translate(1.5%,-1%)}100%{transform:translate(-1%,1.5%)}}
-.flash{position:absolute;inset:0;z-index:10;pointer-events:none;opacity:0;background:linear-gradient(90deg,transparent 0 46%,rgba(255,211,38,.11) 50%,transparent 54%)}
-.flash.go{animation:flash .38s cubic-bezier(.2,.8,.2,1)}
-@keyframes flash{0%{opacity:0;transform:translateX(-14%)}30%{opacity:.75}100%{opacity:0;transform:translateX(14%)}}
+video{width:100%;height:100%;display:block;object-fit:cover;object-position:center;background:var(--black)}
+.shade{position:absolute;inset:0;z-index:3;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,0) 45%,rgba(0,0,0,.22))}
+.grain{position:absolute;inset:-30%;z-index:4;pointer-events:none;opacity:.01;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.65'/%3E%3C/svg%3E")}
 
-/* Pre-start state: nothing except one invitation */
-.start-gate{position:absolute;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;background:#030303;cursor:pointer;transition:opacity .45s ease,visibility .45s ease}
+/* PRE-START: cinematic, no interface chrome */
+.start-gate{position:absolute;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 58%,rgba(243,191,69,.055),transparent 28%),#030303;cursor:pointer;transition:opacity .5s ease,visibility .5s ease}
 .start-gate.hidden{opacity:0;visibility:hidden;pointer-events:none}
-.start-gate button{appearance:none;border:0;background:transparent;color:#fff;padding:28px;cursor:pointer;font-size:13px;font-weight:900;letter-spacing:.24em;text-transform:uppercase;position:relative}
-.start-gate button::after{content:"";position:absolute;left:50%;bottom:14px;width:42px;height:2px;background:var(--yellow);transform:translateX(-50%);transition:width .25s ease}
-.start-gate button:active::after,.start-gate button:hover::after{width:68px}
+.start-copy{text-align:center;transform:translateY(2vh)}
+.start-kicker{display:block;margin-bottom:16px;font-size:9px;font-weight:700;letter-spacing:.28em;color:rgba(234,223,201,.46)}
+.start-button{appearance:none;border:0;background:transparent;color:var(--ivory);padding:18px 24px 22px;cursor:pointer;font-size:13px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;position:relative}
+.start-button::after{content:"";position:absolute;left:50%;bottom:8px;width:34px;height:2px;background:var(--gold);transform:translateX(-50%);transition:width .28s ease}
+.start-button:hover::after,.start-button:active::after{width:56px}
 
-.copy{position:absolute;inset:0;z-index:8;pointer-events:none}.message{position:absolute;opacity:0;transition:opacity .48s ease,transform .58s cubic-bezier(.22,.61,.36,1);will-change:transform,opacity}.message.show{opacity:1}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:9px;font-weight:900;letter-spacing:.18em;color:#fff;white-space:nowrap;text-shadow:0 2px 12px rgba(0,0,0,.65)}
-.eyebrow::before{content:"";width:22px;height:2px;background:var(--yellow);flex:none}
-.hero-copy{left:6vw;bottom:8vh;transform:translateY(22px)}.hero-copy.show{transform:translateY(0)}
-.hero-copy h1,.final-copy h1{margin:11px 0 0;font-family:'Arial Black',Arial,Helvetica,sans-serif;font-size:clamp(68px,11.5vw,168px);line-height:.82;letter-spacing:-.025em;font-weight:900;text-transform:uppercase;color:#fff;text-shadow:0 3px 18px rgba(0,0,0,.70)}
-.hero-copy p,.final-copy p{margin:17px 0 0;font-size:clamp(17px,1.8vw,28px);letter-spacing:.17em;font-weight:900;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.7)}
-.marker{position:relative;display:inline-block;z-index:0}.marker::before{content:"";position:absolute;left:-2%;right:-2%;bottom:.07em;height:.18em;background:var(--yellow);z-index:-1;transform:rotate(-.6deg)}
-.micro{margin-top:14px;font-size:8px;letter-spacing:.18em;font-weight:800;color:rgba(255,255,255,.82);text-shadow:0 2px 12px rgba(0,0,0,.7)}
+/* CINEMATIC COPY — deliberately sparse */
+.copy{position:absolute;inset:0;z-index:8;pointer-events:none}
+.message{position:absolute;opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .6s cubic-bezier(.22,.61,.36,1)}
+.message.show{opacity:1;transform:translateY(0)}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:8px;font-weight:700;letter-spacing:.2em;color:var(--muted);white-space:nowrap}
+.eyebrow::before{content:"";width:18px;height:1px;background:var(--gold);flex:none}
+.hero-copy{left:6vw;bottom:8vh}
+.hero-copy .statement,.final-copy .statement{margin:10px 0 0;font-size:clamp(28px,3.1vw,46px);line-height:1;letter-spacing:.015em;font-weight:800;color:var(--ivory);text-shadow:0 2px 18px rgba(0,0,0,.62)}
+.charge-copy{left:6vw;bottom:10vh}
+.charge-copy .eyebrow{opacity:.88}
+.release-copy{right:6vw;top:13vh;text-align:right}
+.release-copy .eyebrow{justify-content:flex-end}
+.release-copy .statement{margin-top:10px;font-size:clamp(32px,4vw,58px);line-height:.96;font-weight:800;letter-spacing:-.015em;color:var(--ivory);text-shadow:0 2px 18px rgba(0,0,0,.7)}
+.final-copy{left:6vw;bottom:7vh}
+.final-copy .cta{display:inline-block;margin-top:16px;padding-bottom:4px;border-bottom:1px solid var(--gold);font-size:10px;font-weight:800;letter-spacing:.16em;color:var(--ivory)}
 
-.charge-copy{left:6vw;top:50%;transform:translateY(calc(-50% + 26px))}.charge-copy.show{transform:translateY(-50%)}
-.charge-copy .word{display:block;width:max-content;font-family:'Arial Black',Arial,Helvetica,sans-serif;font-size:clamp(44px,7.1vw,106px);font-weight:900;line-height:.91;letter-spacing:-.012em;text-transform:uppercase;color:#fff;text-shadow:0 3px 16px rgba(0,0,0,.74)}
-.charge-copy .word.hot{position:relative}.charge-copy .word.hot::after{content:"";position:absolute;left:0;right:0;bottom:.03em;height:.09em;background:var(--yellow);z-index:-1}
-.charge-copy .eyebrow{margin-bottom:16px}
-
-.release-copy{right:6vw;top:12vh;width:min(44vw,650px);text-align:right;transform:translateY(26px)}.release-copy.show{transform:translateY(0)}
-.release-copy .eyebrow{justify-content:flex-end;margin-bottom:16px}.release-copy .headline{font-family:'Arial Black',Arial,Helvetica,sans-serif;font-size:clamp(40px,5.6vw,86px);font-weight:900;letter-spacing:-.012em;line-height:.91;text-transform:uppercase;color:#fff;text-shadow:0 3px 18px rgba(0,0,0,.78)}
-.release-copy .headline .marker::before{height:.10em;bottom:.03em}
-
-.final-copy{left:6vw;bottom:7vh;transform:translateY(26px)}.final-copy.show{transform:translateY(0)}
-.final-copy .cta{display:inline-block;margin-top:22px;padding:0 0 5px;border-bottom:2px solid var(--yellow);font-size:11px;font-weight:900;letter-spacing:.15em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.7)}
-
+/* UI stays almost invisible */
 .rail,.sound,.hint{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .35s ease,visibility .35s ease}
 body.started .rail,body.started .sound,body.started .hint{opacity:1;visibility:visible;pointer-events:auto}
-.rail{position:absolute;right:max(16px,env(safe-area-inset-right));top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;gap:15px;align-items:flex-end}.rail button{appearance:none;border:0;background:transparent;color:rgba(255,255,255,.45);padding:3px 0;display:flex;align-items:center;gap:8px;cursor:pointer;letter-spacing:.12em;font-size:9px;font-weight:900;transition:color .25s ease,transform .25s ease}.rail button::before{content:"";width:12px;height:1px;background:currentColor;transition:width .25s ease,background .25s ease}.rail button.active{color:#fff;transform:translateX(-3px)}.rail button.active::before{width:28px;height:2px;background:var(--yellow)}.rail .label{opacity:0;max-width:0;overflow:hidden;white-space:nowrap;transition:opacity .22s ease,max-width .28s ease}.rail button:hover .label,.rail button.active .label{opacity:1;max-width:70px}
-.sound{position:absolute;right:max(18px,env(safe-area-inset-right));top:max(18px,env(safe-area-inset-top));z-index:30;appearance:none;border:0;background:transparent;color:#fff;padding:5px;font-size:9px;font-weight:900;letter-spacing:.11em;cursor:pointer;display:flex;align-items:center;gap:7px;text-shadow:0 2px 12px rgba(0,0,0,.72)}.sound::before{content:"◖)))";font-size:10px;color:var(--yellow)}.sound.muted::before{content:"◖";font-size:13px}.hint{position:absolute;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;font-size:8px;font-weight:800;letter-spacing:.16em;color:rgba(255,255,255,.60);white-space:nowrap;text-shadow:0 2px 10px rgba(0,0,0,.75)}
+.rail{position:absolute;right:max(13px,env(safe-area-inset-right));top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;gap:14px;align-items:flex-end}
+.rail button{appearance:none;border:0;background:transparent;color:rgba(234,223,201,.28);padding:2px 0;display:flex;align-items:center;gap:7px;cursor:pointer;font-size:8px;font-weight:700;letter-spacing:.12em}
+.rail button::before{content:"";width:7px;height:1px;background:currentColor;transition:width .25s ease,background .25s ease}
+.rail button.active{color:rgba(234,223,201,.86)}
+.rail button.active::before{width:16px;background:var(--gold)}
+.rail .label{display:none}
+.sound{position:absolute;right:max(15px,env(safe-area-inset-right));top:max(15px,env(safe-area-inset-top));z-index:30;appearance:none;border:0;background:transparent;color:rgba(234,223,201,.68);padding:4px;cursor:pointer;font-size:15px;line-height:1}
+.sound span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+.hint{position:absolute;left:50%;bottom:max(15px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;font-size:7px;font-weight:700;letter-spacing:.18em;color:rgba(234,223,201,.28);white-space:nowrap}
 
 @media(max-width:700px){
-.hero-copy{left:6vw;bottom:8.5vh;max-width:70vw}.hero-copy h1{font-size:clamp(62px,18vw,88px);line-height:.84}.hero-copy p{font-size:15px;letter-spacing:.14em}.hero-copy .micro{display:none}
-.charge-copy{left:7vw;top:55%;max-width:66vw}.charge-copy .eyebrow{margin-bottom:12px}.charge-copy .word{font-size:clamp(39px,11.6vw,56px);line-height:.92;letter-spacing:-.006em}
-.release-copy{right:7vw;top:10.5vh;width:56vw}.release-copy .headline{font-size:clamp(37px,10.8vw,52px);line-height:.92;letter-spacing:-.006em}.release-copy .eyebrow{margin-bottom:12px}
-.final-copy{left:6vw;bottom:7.5vh;max-width:62vw}.final-copy h1{font-size:clamp(62px,18vw,88px);line-height:.84}.final-copy p{font-size:15px;letter-spacing:.14em}.final-copy .cta{font-size:10px;margin-top:19px}
-.eyebrow{font-size:8px;letter-spacing:.14em}.eyebrow::before{width:16px}.rail{right:9px;gap:14px}.rail .label{display:none}.rail button{font-size:8px;color:rgba(255,255,255,.55)}.rail button::before{width:8px}.rail button.active::before{width:18px}.sound{right:10px;top:max(10px,env(safe-area-inset-top));font-size:8px}.hint{font-size:7px;color:rgba(255,255,255,.52)}
+.hero-copy{left:6vw;bottom:8.5vh;max-width:54vw}
+.hero-copy .statement,.final-copy .statement{font-size:22px;line-height:1.04;letter-spacing:.01em}
+.charge-copy{left:6vw;bottom:9vh}
+.release-copy{right:6vw;top:11vh;max-width:46vw}
+.release-copy .statement{font-size:30px;line-height:.98}
+.final-copy{left:6vw;bottom:7.5vh;max-width:48vw}
+.eyebrow{font-size:7px;letter-spacing:.17em}.eyebrow::before{width:14px}
+.rail{right:8px;gap:13px}.rail button{font-size:7px}.rail button::before{width:6px}.rail button.active::before{width:13px}
+.sound{right:9px;top:max(9px,env(safe-area-inset-top));font-size:14px}.hint{font-size:6px;color:rgba(234,223,201,.22)}
 }
-@media(prefers-reduced-motion:reduce){.video-layer,.message,.rail button{transition:none}.grain{animation:none}.flash{display:none}}
+@media(prefers-reduced-motion:reduce){.video-layer,.message,.rail button,.start-gate{transition:none}}
 </style>
 </head>
 <body>
 <main class="stage" id="stage" aria-label="TEZZ cinematic product experience">
-<div class="video-layer active"><video id="v1" src="./Tezz%20video1.mp4" muted playsinline preload="auto"></video></div>
-<div class="video-layer"><video id="v2" src="./Tezz%20video%202.mp4" muted playsinline preload="auto"></video></div>
-<div class="video-layer"><video id="v3" src="./Tezz%20video3.mp4" muted playsinline preload="auto"></video></div>
-<div class="video-layer"><video id="v4" src="./Tezz%20video4.mp4" muted playsinline preload="auto"></video></div>
-<div class="shade"></div><div class="grain"></div><div class="flash" id="flash"></div>
+  <div class="video-layer active"><video id="v1" src="./Tezz%20video1.mp4" muted playsinline preload="auto"></video></div>
+  <div class="video-layer"><video id="v2" src="./Tezz%20video%202.mp4" muted playsinline preload="auto"></video></div>
+  <div class="video-layer"><video id="v3" src="./Tezz%20video3.mp4" muted playsinline preload="auto"></video></div>
+  <div class="video-layer"><video id="v4" src="./Tezz%20video4.mp4" muted playsinline preload="auto"></video></div>
+  <div class="shade"></div><div class="grain"></div>
 
-<div class="start-gate" id="startGate"><button id="startButton" aria-label="Start TEZZ experience">TAP TO START</button></div>
+  <div class="start-gate" id="startGate">
+    <div class="start-copy">
+      <span class="start-kicker">TEZZ / ENERGY DRINK</span>
+      <button class="start-button" id="startButton" aria-label="Start TEZZ experience">TAP TO SWITCH ON</button>
+    </div>
+  </div>
 
-<div class="copy" aria-hidden="true">
-<div class="message hero-copy" id="m1"><span class="eyebrow">01 / REVEAL</span><h1>TEZZ</h1><p>SWITCH <span class="marker">ON.</span></p><div class="micro">250 ML / ENERGY SYSTEM</div></div>
-<div class="message charge-copy" id="m2"><span class="eyebrow">02 / CHARGE</span><span class="word">HIGHER</span><span class="word hot">FURTHER</span><span class="word">FASTER</span><span class="word">BRIGHTER</span></div>
-<div class="message release-copy" id="m3"><span class="eyebrow">03 / RELEASE</span><div class="headline">UNLEASH THE <span class="marker">CHARGE</span></div></div>
-<div class="message final-copy" id="m4"><span class="eyebrow">04 / HERO</span><h1>TEZZ</h1><p>SWITCH <span class="marker">ON.</span></p><span class="cta">TRY TEZZ</span></div>
-</div>
+  <div class="copy" aria-hidden="true">
+    <div class="message hero-copy" id="m1"><span class="eyebrow">01 / REVEAL</span><div class="statement">SWITCH ON.</div></div>
+    <div class="message charge-copy" id="m2"><span class="eyebrow">02 / CHARGE</span></div>
+    <div class="message release-copy" id="m3"><span class="eyebrow">03 / RELEASE</span><div class="statement">UNLEASH.</div></div>
+    <div class="message final-copy" id="m4"><span class="eyebrow">04 / HERO</span><div class="statement">SWITCH ON.</div><span class="cta">DISCOVER TEZZ</span></div>
+  </div>
 
-<button class="sound" id="soundButton" aria-pressed="true">SOUND ON</button>
-<nav class="rail" aria-label="TEZZ chapters">
-<button class="active" data-index="0" aria-label="Reveal"><span>01</span><span class="label">REVEAL</span></button>
-<button data-index="1" aria-label="Charge"><span>02</span><span class="label">CHARGE</span></button>
-<button data-index="2" aria-label="Release"><span>03</span><span class="label">RELEASE</span></button>
-<button data-index="3" aria-label="Hero"><span>04</span><span class="label">HERO</span></button>
-</nav>
-<div class="hint">SWIPE · SELECT</div>
+  <button class="sound" id="soundButton" aria-pressed="true" aria-label="Sound on">◉<span>Sound on</span></button>
+  <nav class="rail" aria-label="TEZZ chapters">
+    <button class="active" data-index="0" aria-label="Reveal"><span>01</span></button>
+    <button data-index="1" aria-label="Charge"><span>02</span></button>
+    <button data-index="2" aria-label="Release"><span>03</span></button>
+    <button data-index="3" aria-label="Hero"><span>04</span></button>
+  </nav>
+  <div class="hint">SWIPE · SELECT</div>
 </main>
 <script>
-const videos=[v1,v2,v3,v4],layers=[...document.querySelectorAll('.video-layer')],messages=[m1,m2,m3,m4],buttons=[...document.querySelectorAll('.rail button')];
-const soundButton=document.getElementById('soundButton'),flash=document.getElementById('flash'),startGate=document.getElementById('startGate'),startButton=document.getElementById('startButton');
+const videos=[v1,v2,v3,v4];
+const layers=[...document.querySelectorAll('.video-layer')];
+const messages=[m1,m2,m3,m4];
+const buttons=[...document.querySelectorAll('.rail button')];
+const soundButton=document.getElementById('soundButton');
+const startGate=document.getElementById('startGate');
+const startButton=document.getElementById('startButton');
 let active=0,switching=false,touchStartY=0,wheelLock=false,messageTimer=null,started=false,soundOn=true;
 
 videos.forEach(v=>{v.playsInline=true;v.muted=true;v.volume=1;v.pause();try{v.currentTime=0}catch(e){}});
 
 function syncSoundUI(){
   videos.forEach(v=>v.muted=!soundOn);
-  soundButton.textContent=soundOn?'SOUND ON':'SOUND OFF';
-  soundButton.classList.toggle('muted',!soundOn);
+  soundButton.innerHTML=soundOn?'◉<span>Sound on</span>':'○<span>Sound off</span>';
   soundButton.setAttribute('aria-pressed',String(soundOn));
+  soundButton.setAttribute('aria-label',soundOn?'Sound on':'Sound off');
 }
-function fireFlash(){flash.classList.remove('go');void flash.offsetWidth;flash.classList.add('go')}
-function showMessage(index,delay){clearTimeout(messageTimer);messages.forEach(m=>m.classList.remove('show'));messageTimer=setTimeout(()=>messages[index].classList.add('show'),delay)}
-function playFromStart(video){try{video.currentTime=0}catch(e){}video.muted=!soundOn;const p=video.play();if(p&&p.catch)p.catch(()=>{})}
+function showMessage(index,delay){
+  clearTimeout(messageTimer);
+  messages.forEach(m=>m.classList.remove('show'));
+  messageTimer=setTimeout(()=>messages[index].classList.add('show'),delay);
+}
+function playFromStart(video){
+  try{video.currentTime=0}catch(e){}
+  video.muted=!soundOn;
+  const p=video.play();if(p&&p.catch)p.catch(()=>{});
+}
 function activate(index,play=true){
   index=Math.max(0,Math.min(videos.length-1,index));
-  const old=active;active=index;
+  active=index;
   videos.forEach((v,i)=>{if(i!==index)v.pause()});
-  if(old!==index)fireFlash();
   layers.forEach((layer,i)=>layer.classList.toggle('active',i===index));
   buttons.forEach((button,i)=>button.classList.toggle('active',i===index));
-  showMessage(index,index===3?650:300);
+  const delay=index===3?900:(index===0?520:420);
+  showMessage(index,delay);
   if(play)playFromStart(videos[index]);
 }
 async function startExperience(){
@@ -124,30 +146,31 @@ async function startExperience(){
   startGate.classList.add('hidden');
   soundOn=true;
   syncSoundUI();
-  activate(0,false);
-  try{videos[0].currentTime=0;videos[0].muted=false;await videos[0].play()}catch(e){soundOn=false;syncSoundUI();try{await videos[0].play()}catch(_){} }
+  try{videos[0].muted=false;await videos[0].play()}catch(e){soundOn=false;syncSoundUI();try{await videos[0].play()}catch(_) {}}
+  showMessage(0,520);
 }
 function goTo(index){
-  index=Math.max(0,Math.min(videos.length-1,index));
   if(!started){startExperience();return}
+  index=Math.max(0,Math.min(videos.length-1,index));
   if(switching||index===active)return;
-  switching=true;activate(index,true);setTimeout(()=>switching=false,680)
+  switching=true;
+  activate(index,true);
+  setTimeout(()=>switching=false,720);
 }
-function advanceFromEnded(index){if(index!==active||!started)return;if(index<videos.length-1)setTimeout(()=>goTo(index+1),150);else showMessage(3,140)}
+function advanceFromEnded(index){
+  if(index!==active||!started)return;
+  if(index<videos.length-1)setTimeout(()=>goTo(index+1),220);
+  else showMessage(3,180);
+}
 videos.forEach((video,i)=>video.addEventListener('ended',()=>advanceFromEnded(i)));
-
 startGate.addEventListener('click',startExperience);
 startButton.addEventListener('click',e=>{e.stopPropagation();startExperience()});
-soundButton.addEventListener('click',e=>{e.stopPropagation();soundOn=!soundOn;syncSoundUI();if(!videos[active].paused)videos[active].play().catch(()=>{})});
+soundButton.addEventListener('click',e=>{e.stopPropagation();soundOn=!soundOn;syncSoundUI();if(videos[active].paused)videos[active].play().catch(()=>{})});
 buttons.forEach(button=>button.addEventListener('click',e=>{e.stopPropagation();goTo(Number(button.dataset.index))}));
-
 window.addEventListener('wheel',e=>{e.preventDefault();if(!started){startExperience();return}if(wheelLock||switching||Math.abs(e.deltaY)<8)return;wheelLock=true;goTo(active+(e.deltaY>0?1:-1));setTimeout(()=>wheelLock=false,900)},{passive:false});
 window.addEventListener('touchstart',e=>{touchStartY=e.touches[0].clientY},{passive:true});
-window.addEventListener('touchend',e=>{if(!started)return;const dy=touchStartY-e.changedTouches[0].clientY;if(Math.abs(dy)>42)goTo(active+(dy>0?1:-1))},{passive:true});
-window.addEventListener('keydown',e=>{if(!started&&['Enter',' ','ArrowDown','ArrowRight'].includes(e.key)){startExperience();return}if(['ArrowDown','PageDown','ArrowRight'].includes(e.key))goTo(active+1);if(['ArrowUp','PageUp','ArrowLeft'].includes(e.key))goTo(active-1);if(e.key==='Home')goTo(0);if(e.key==='End')goTo(3)});
-
-if(matchMedia('(pointer:fine)').matches){window.addEventListener('pointermove',e=>{if(!started)return;const x=e.clientX/innerWidth-.5,y=e.clientY/innerHeight-.5,msg=messages[active];if(msg.classList.contains('show'))msg.style.translate=`${x*3}px ${y*2}px`})}
-
+window.addEventListener('touchend',e=>{if(!started)return;const dy=touchStartY-e.changedTouches[0].clientY;if(Math.abs(dy)>44)goTo(active+(dy>0?1:-1))},{passive:true});
+window.addEventListener('keydown',e=>{if(!started&&(e.key==='Enter'||e.key===' ')){startExperience();return}if(['ArrowDown','PageDown','ArrowRight'].includes(e.key))goTo(active+1);if(['ArrowUp','PageUp','ArrowLeft'].includes(e.key))goTo(active-1)});
 syncSoundUI();
 </script>
 </body>
