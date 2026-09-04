@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>TEZZ — Switch On.</title>
+  <meta name="description" content="TEZZ cinematic scroll experience." />
+  <style>
+    *{box-sizing:border-box}html,body{margin:0;background:#050505;color:#fff;font-family:Arial,Helvetica,sans-serif}body{overflow-x:hidden}
+    .scroll-space{height:520vh;position:relative;background:#050505}
+    .stage{position:sticky;top:0;height:100vh;overflow:hidden;background:#050505}
+    .video-layer{position:absolute;inset:0;opacity:0;transition:opacity .16s linear;pointer-events:none}
+    .video-layer.active{opacity:1}
+    video{width:100%;height:100%;object-fit:cover;object-position:center center;display:block;background:#050505}
+    .shade{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.18),rgba(0,0,0,.05) 45%,rgba(0,0,0,.28));pointer-events:none}
+    .copy{position:absolute;inset:0;pointer-events:none}
+    .message{position:absolute;opacity:0;transform:translateY(22px);transition:opacity .18s linear,transform .18s linear}
+    .message.show{opacity:1;transform:translateY(0)}
+    .hero-copy{left:7vw;bottom:9vh}
+    .hero-copy h1,.final-copy h1{margin:0;font-size:clamp(58px,10vw,150px);line-height:.82;letter-spacing:-.06em;font-weight:900}
+    .hero-copy p,.final-copy p{margin:14px 0 0;font-size:clamp(18px,2.2vw,34px);letter-spacing:.22em;font-weight:700}
+    .charge-copy{left:7vw;top:50%;transform:translateY(-50%)}
+    .charge-copy.show{transform:translateY(-50%)}
+    .charge-copy div{font-size:clamp(34px,6vw,90px);font-weight:900;line-height:.9;letter-spacing:-.04em}
+    .release-copy{left:50%;top:10vh;transform:translateX(-50%) translateY(22px);text-align:center;width:90vw}
+    .release-copy.show{transform:translateX(-50%) translateY(0)}
+    .release-copy div{font-size:clamp(32px,5vw,78px);font-weight:900;letter-spacing:-.04em}
+    .final-copy{left:7vw;bottom:8vh}
+    .cta{display:inline-block;margin-top:20px;padding:14px 22px;border:1px solid rgba(255,255,255,.75);border-radius:999px;font-size:14px;font-weight:800;letter-spacing:.12em;background:rgba(0,0,0,.2);backdrop-filter:blur(8px)}
+    .progress{position:absolute;right:24px;top:50%;transform:translateY(-50%);width:3px;height:28vh;background:rgba(255,255,255,.18);border-radius:999px;overflow:hidden}
+    .progress span{display:block;width:100%;height:0;background:#fff}
+    .hint{position:absolute;right:24px;bottom:24px;font-size:11px;letter-spacing:.18em;opacity:.6}
+    @media(max-width:700px){.scroll-space{height:560vh}.hero-copy,.charge-copy,.final-copy{left:6vw}.progress{right:12px;height:22vh}.hint{right:14px;bottom:16px}.release-copy{top:8vh}}
+    @media(prefers-reduced-motion:reduce){.scroll-space{height:auto}.stage{position:relative}.video-layer{display:none}.video-layer:last-child{display:block;opacity:1}.message{display:none}.final-copy{display:block;opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+  <main class="scroll-space" id="experience">
+    <section class="stage" aria-label="TEZZ cinematic product experience">
+      <div class="video-layer active"><video id="v1" src="./Tezz%20video1.mp4" muted playsinline preload="auto"></video></div>
+      <div class="video-layer"><video id="v2" src="./Tezz%20video%202.mp4" muted playsinline preload="auto"></video></div>
+      <div class="video-layer"><video id="v3" src="./Tezz%20video3.mp4" muted playsinline preload="auto"></video></div>
+      <div class="video-layer"><video id="v4" src="./Tezz%20video4.mp4" muted playsinline preload="auto"></video></div>
+      <div class="shade"></div>
+      <div class="copy">
+        <div class="message hero-copy" id="m1"><h1>TEZZ</h1><p>SWITCH ON.</p></div>
+        <div class="message charge-copy" id="m2"><div>HIGHER</div><div>FURTHER</div><div>FASTER</div><div>BRIGHTER</div></div>
+        <div class="message release-copy" id="m3"><div>UNLEASH THE CHARGE</div></div>
+        <div class="message final-copy" id="m4"><h1>TEZZ</h1><p>SWITCH ON.</p><span class="cta">TRY TEZZ</span></div>
+      </div>
+      <div class="progress" aria-hidden="true"><span id="bar"></span></div>
+      <div class="hint">SCROLL TO CONTROL</div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    const videos = [v1,v2,v3,v4];
+    const layers = [...document.querySelectorAll('.video-layer')];
+    const messages = [m1,m2,m3,m4];
+    const bar = document.getElementById('bar');
+
+    videos.forEach(v => {
+      v.pause();
+      v.currentTime = 0;
+    });
+
+    function setActive(index){
+      layers.forEach((layer,i)=>layer.classList.toggle('active',i===index));
+    }
+
+    function setMessage(index){
+      messages.forEach((m,i)=>m.classList.toggle('show',i===index));
+    }
+
+    function seekVideo(video, progress){
+      if (!Number.isFinite(video.duration) || video.duration <= 0) return;
+      const safeEnd = Math.max(0, video.duration - 0.04);
+      const target = Math.min(safeEnd, Math.max(0, progress * safeEnd));
+      if (Math.abs(video.currentTime - target) > 0.025) video.currentTime = target;
+    }
+
+    ScrollTrigger.create({
+      trigger:'#experience',
+      start:'top top',
+      end:'bottom bottom',
+      scrub:true,
+      onUpdate:self=>{
+        const p = Math.min(.999999, Math.max(0,self.progress));
+        const scaled = p * 4;
+        const index = Math.min(3, Math.floor(scaled));
+        const local = scaled - index;
+
+        setActive(index);
+        seekVideo(videos[index], local);
+        bar.style.height = (p*100)+'%';
+
+        if (p < .20) setMessage(0);
+        else if (p >= .28 && p < .48) setMessage(1);
+        else if (p >= .54 && p < .73) setMessage(2);
+        else if (p >= .83) setMessage(3);
+        else setMessage(-1);
+      }
+    });
+
+    videos.forEach(v=>v.addEventListener('loadedmetadata',()=>ScrollTrigger.refresh(),{once:true}));
+
+    // Helps iOS Safari unlock media seeking after the first interaction.
+    window.addEventListener('touchstart',()=>{
+      videos.forEach(v=>{
+        const p=v.play();
+        if(p && p.then) p.then(()=>v.pause()).catch(()=>{});
+      });
+    },{once:true,passive:true});
+  </script>
+</body>
+</html>
