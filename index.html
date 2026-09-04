@@ -4,117 +4,166 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>TEZZ — Switch On.</title>
-  <meta name="description" content="TEZZ cinematic scroll experience." />
+  <meta name="description" content="TEZZ cinematic product experience." />
   <style>
-    *{box-sizing:border-box}html,body{margin:0;background:#050505;color:#fff;font-family:Arial,Helvetica,sans-serif}body{overflow-x:hidden}
-    .scroll-space{height:520vh;position:relative;background:#050505}
-    .stage{position:sticky;top:0;height:100vh;overflow:hidden;background:#050505}
-    .video-layer{position:absolute;inset:0;opacity:0;transition:opacity .16s linear;pointer-events:none}
+    :root{--gold:#d8a84a;--white:#fff;--muted:rgba(255,255,255,.46)}
+    *{box-sizing:border-box}
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#030303;color:#fff;font-family:Arial,Helvetica,sans-serif}
+    body{overscroll-behavior:none;touch-action:none}
+    button{font:inherit}
+
+    .stage{position:fixed;inset:0;overflow:hidden;background:#030303}
+    .video-layer{position:absolute;inset:0;opacity:0;transition:opacity .55s ease;pointer-events:none;will-change:opacity}
     .video-layer.active{opacity:1}
-    video{width:100%;height:100%;object-fit:cover;object-position:center center;display:block;background:#050505}
-    .shade{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.18),rgba(0,0,0,.05) 45%,rgba(0,0,0,.28));pointer-events:none}
+    video{width:100%;height:100%;display:block;object-fit:cover;object-position:center;background:#030303}
+    .shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.14),rgba(0,0,0,.02) 47%,rgba(0,0,0,.34))}
+
     .copy{position:absolute;inset:0;pointer-events:none}
-    .message{position:absolute;opacity:0;transform:translateY(22px);transition:opacity .18s linear,transform .18s linear}
+    .message{position:absolute;opacity:0;transform:translateY(18px);transition:opacity .45s ease,transform .45s ease}
     .message.show{opacity:1;transform:translateY(0)}
-    .hero-copy{left:7vw;bottom:9vh}
+    .hero-copy,.final-copy{left:6vw;bottom:8vh}
     .hero-copy h1,.final-copy h1{margin:0;font-size:clamp(58px,10vw,150px);line-height:.82;letter-spacing:-.06em;font-weight:900}
-    .hero-copy p,.final-copy p{margin:14px 0 0;font-size:clamp(18px,2.2vw,34px);letter-spacing:.22em;font-weight:700}
-    .charge-copy{left:7vw;top:50%;transform:translateY(-50%)}
+    .hero-copy p,.final-copy p{margin:14px 0 0;font-size:clamp(17px,2vw,30px);letter-spacing:.24em;font-weight:700}
+    .charge-copy{left:6vw;top:50%;transform:translateY(calc(-50% + 18px))}
     .charge-copy.show{transform:translateY(-50%)}
-    .charge-copy div{font-size:clamp(34px,6vw,90px);font-weight:900;line-height:.9;letter-spacing:-.04em}
-    .release-copy{left:50%;top:10vh;transform:translateX(-50%) translateY(22px);text-align:center;width:90vw}
+    .charge-copy div{font-size:clamp(34px,6vw,88px);font-weight:900;line-height:.9;letter-spacing:-.04em}
+    .release-copy{left:50%;top:10vh;width:90vw;text-align:center;transform:translateX(-50%) translateY(18px)}
     .release-copy.show{transform:translateX(-50%) translateY(0)}
-    .release-copy div{font-size:clamp(32px,5vw,78px);font-weight:900;letter-spacing:-.04em}
-    .final-copy{left:7vw;bottom:8vh}
-    .cta{display:inline-block;margin-top:20px;padding:14px 22px;border:1px solid rgba(255,255,255,.75);border-radius:999px;font-size:14px;font-weight:800;letter-spacing:.12em;background:rgba(0,0,0,.2);backdrop-filter:blur(8px)}
-    .progress{position:absolute;right:24px;top:50%;transform:translateY(-50%);width:3px;height:28vh;background:rgba(255,255,255,.18);border-radius:999px;overflow:hidden}
-    .progress span{display:block;width:100%;height:0;background:#fff}
-    .hint{position:absolute;right:24px;bottom:24px;font-size:11px;letter-spacing:.18em;opacity:.6}
-    @media(max-width:700px){.scroll-space{height:560vh}.hero-copy,.charge-copy,.final-copy{left:6vw}.progress{right:12px;height:22vh}.hint{right:14px;bottom:16px}.release-copy{top:8vh}}
-    @media(prefers-reduced-motion:reduce){.scroll-space{height:auto}.stage{position:relative}.video-layer{display:none}.video-layer:last-child{display:block;opacity:1}.message{display:none}.final-copy{display:block;opacity:1;transform:none}}
+    .release-copy div{font-size:clamp(31px,5vw,76px);font-weight:900;letter-spacing:-.04em}
+    .cta{display:inline-block;margin-top:20px;padding:13px 21px;border:1px solid rgba(255,255,255,.72);border-radius:999px;font-size:13px;font-weight:800;letter-spacing:.14em;background:rgba(0,0,0,.22);backdrop-filter:blur(8px)}
+
+    .rail{position:absolute;right:max(18px,env(safe-area-inset-right));top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;gap:18px;align-items:flex-end}
+    .rail button{appearance:none;border:0;background:transparent;color:var(--muted);padding:0;display:flex;align-items:center;gap:10px;cursor:pointer;letter-spacing:.13em;font-size:11px;font-weight:700;transition:color .25s ease,transform .25s ease}
+    .rail button::before{content:"";width:18px;height:1px;background:currentColor;transition:width .25s ease,background .25s ease}
+    .rail button.active{color:var(--white);transform:translateX(-4px)}
+    .rail button.active::before{width:36px;background:var(--gold)}
+    .rail .label{opacity:0;transform:translateX(6px);transition:opacity .25s ease,transform .25s ease}
+    .rail button:hover .label,.rail button.active .label{opacity:1;transform:none}
+
+    .counter{position:absolute;left:max(18px,env(safe-area-inset-left));top:max(18px,env(safe-area-inset-top));z-index:20;font-size:11px;letter-spacing:.22em;color:rgba(255,255,255,.72)}
+    .hint{position:absolute;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;font-size:10px;letter-spacing:.18em;color:rgba(255,255,255,.56);white-space:nowrap}
+
+    @media(max-width:700px){
+      .hero-copy,.final-copy,.charge-copy{left:6vw}
+      .release-copy{top:8vh}
+      .rail{right:12px;gap:16px}
+      .rail .label{display:none}
+      .rail button::before{width:13px}
+      .rail button.active::before{width:26px}
+      .hint{font-size:9px}
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      .video-layer,.message,.rail button{transition:none}
+    }
   </style>
 </head>
 <body>
-  <main class="scroll-space" id="experience">
-    <section class="stage" aria-label="TEZZ cinematic product experience">
-      <div class="video-layer active"><video id="v1" src="./Tezz%20video1.mp4" muted playsinline preload="auto"></video></div>
-      <div class="video-layer"><video id="v2" src="./Tezz%20video%202.mp4" muted playsinline preload="auto"></video></div>
-      <div class="video-layer"><video id="v3" src="./Tezz%20video3.mp4" muted playsinline preload="auto"></video></div>
-      <div class="video-layer"><video id="v4" src="./Tezz%20video4.mp4" muted playsinline preload="auto"></video></div>
-      <div class="shade"></div>
-      <div class="copy">
-        <div class="message hero-copy" id="m1"><h1>TEZZ</h1><p>SWITCH ON.</p></div>
-        <div class="message charge-copy" id="m2"><div>HIGHER</div><div>FURTHER</div><div>FASTER</div><div>BRIGHTER</div></div>
-        <div class="message release-copy" id="m3"><div>UNLEASH THE CHARGE</div></div>
-        <div class="message final-copy" id="m4"><h1>TEZZ</h1><p>SWITCH ON.</p><span class="cta">TRY TEZZ</span></div>
-      </div>
-      <div class="progress" aria-hidden="true"><span id="bar"></span></div>
-      <div class="hint">SCROLL TO CONTROL</div>
-    </section>
+  <main class="stage" id="stage" aria-label="TEZZ cinematic product experience">
+    <div class="video-layer active"><video id="v1" src="./Tezz%20video1.mp4" muted playsinline preload="auto"></video></div>
+    <div class="video-layer"><video id="v2" src="./Tezz%20video%202.mp4" muted playsinline preload="auto"></video></div>
+    <div class="video-layer"><video id="v3" src="./Tezz%20video3.mp4" muted playsinline preload="auto"></video></div>
+    <div class="video-layer"><video id="v4" src="./Tezz%20video4.mp4" muted playsinline preload="auto"></video></div>
+
+    <div class="shade"></div>
+
+    <div class="copy" aria-hidden="true">
+      <div class="message hero-copy show" id="m1"><h1>TEZZ</h1><p>SWITCH ON.</p></div>
+      <div class="message charge-copy" id="m2"><div>HIGHER</div><div>FURTHER</div><div>FASTER</div><div>BRIGHTER</div></div>
+      <div class="message release-copy" id="m3"><div>UNLEASH THE CHARGE</div></div>
+      <div class="message final-copy" id="m4"><h1>TEZZ</h1><p>SWITCH ON.</p><span class="cta">TRY TEZZ</span></div>
+    </div>
+
+    <div class="counter" id="counter">01 / 04</div>
+
+    <nav class="rail" aria-label="TEZZ chapters">
+      <button class="active" data-index="0" aria-label="Reveal"><span>01</span><span class="label">REVEAL</span></button>
+      <button data-index="1" aria-label="Charge"><span>02</span><span class="label">CHARGE</span></button>
+      <button data-index="2" aria-label="Release"><span>03</span><span class="label">RELEASE</span></button>
+      <button data-index="3" aria-label="Hero"><span>04</span><span class="label">HERO</span></button>
+    </nav>
+
+    <div class="hint">SWIPE · WHEEL · TAP</div>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
   <script>
-    gsap.registerPlugin(ScrollTrigger);
-
     const videos = [v1,v2,v3,v4];
     const layers = [...document.querySelectorAll('.video-layer')];
     const messages = [m1,m2,m3,m4];
-    const bar = document.getElementById('bar');
+    const buttons = [...document.querySelectorAll('.rail button')];
+    const counter = document.getElementById('counter');
 
-    videos.forEach(v => {
-      v.pause();
-      v.currentTime = 0;
+    let active = 0;
+    let switching = false;
+    let touchStartY = 0;
+    let wheelLock = false;
+
+    videos.forEach((video,i) => {
+      video.muted = true;
+      video.playsInline = true;
+      video.pause();
+      if (i !== 0) video.currentTime = 0;
     });
 
-    function setActive(index){
+    function playFromStart(video){
+      try{ video.currentTime = 0; }catch(e){}
+      const p = video.play();
+      if (p && p.catch) p.catch(()=>{});
+    }
+
+    function goTo(index){
+      index = Math.max(0,Math.min(videos.length-1,index));
+      if(index === active || switching) return;
+
+      switching = true;
+      const old = active;
+      active = index;
+
+      videos[old].pause();
       layers.forEach((layer,i)=>layer.classList.toggle('active',i===index));
+      messages.forEach((message,i)=>message.classList.toggle('show',i===index));
+      buttons.forEach((button,i)=>button.classList.toggle('active',i===index));
+      counter.textContent = String(index+1).padStart(2,'0') + ' / 04';
+
+      playFromStart(videos[index]);
+      setTimeout(()=>{switching=false},600);
     }
 
-    function setMessage(index){
-      messages.forEach((m,i)=>m.classList.toggle('show',i===index));
-    }
-
-    function seekVideo(video, progress){
-      if (!Number.isFinite(video.duration) || video.duration <= 0) return;
-      const safeEnd = Math.max(0, video.duration - 0.04);
-      const target = Math.min(safeEnd, Math.max(0, progress * safeEnd));
-      if (Math.abs(video.currentTime - target) > 0.025) video.currentTime = target;
-    }
-
-    ScrollTrigger.create({
-      trigger:'#experience',
-      start:'top top',
-      end:'bottom bottom',
-      scrub:true,
-      onUpdate:self=>{
-        const p = Math.min(.999999, Math.max(0,self.progress));
-        const scaled = p * 4;
-        const index = Math.min(3, Math.floor(scaled));
-        const local = scaled - index;
-
-        setActive(index);
-        seekVideo(videos[index], local);
-        bar.style.height = (p*100)+'%';
-
-        if (p < .20) setMessage(0);
-        else if (p >= .28 && p < .48) setMessage(1);
-        else if (p >= .54 && p < .73) setMessage(2);
-        else if (p >= .83) setMessage(3);
-        else setMessage(-1);
-      }
+    buttons.forEach(button=>{
+      button.addEventListener('click',()=>goTo(Number(button.dataset.index)));
     });
 
-    videos.forEach(v=>v.addEventListener('loadedmetadata',()=>ScrollTrigger.refresh(),{once:true}));
+    window.addEventListener('wheel',e=>{
+      e.preventDefault();
+      if(wheelLock || switching || Math.abs(e.deltaY)<8) return;
+      wheelLock = true;
+      goTo(active + (e.deltaY>0 ? 1 : -1));
+      setTimeout(()=>{wheelLock=false},850);
+    },{passive:false});
 
-    // Helps iOS Safari unlock media seeking after the first interaction.
-    window.addEventListener('touchstart',()=>{
-      videos.forEach(v=>{
-        const p=v.play();
-        if(p && p.then) p.then(()=>v.pause()).catch(()=>{});
-      });
-    },{once:true,passive:true});
+    window.addEventListener('touchstart',e=>{
+      touchStartY = e.touches[0].clientY;
+    },{passive:true});
+
+    window.addEventListener('touchend',e=>{
+      const dy = touchStartY - e.changedTouches[0].clientY;
+      if(Math.abs(dy)>42) goTo(active + (dy>0 ? 1 : -1));
+    },{passive:true});
+
+    window.addEventListener('keydown',e=>{
+      if(['ArrowDown','PageDown','ArrowRight'].includes(e.key)) goTo(active+1);
+      if(['ArrowUp','PageUp','ArrowLeft'].includes(e.key)) goTo(active-1);
+      if(e.key==='Home') goTo(0);
+      if(e.key==='End') goTo(3);
+    });
+
+    // Start the first muted cinematic clip when allowed; otherwise first user gesture starts it.
+    const firstPlay = videos[0].play();
+    if(firstPlay && firstPlay.catch) firstPlay.catch(()=>{});
+
+    window.addEventListener('pointerdown',()=>{
+      if(videos[active].paused) videos[active].play().catch(()=>{});
+    },{once:true});
   </script>
 </body>
 </html>
