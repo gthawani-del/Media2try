@@ -1,0 +1,59 @@
+name: Smooth TEZZ video handoff
+on:
+  push:
+    paths:
+      - '.github/workflows/smooth-video-handoff.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch video handoff only
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          old="""  try{target.currentTime=0}catch(e){}
+  target.muted=true;
+  let startedTarget=false;
+  try{await target.play();startedTarget=true}catch(e){}
+  if(!startedTarget){switching=false;return}
+  revealLayer(index);
+  target.muted=!soundOn;
+  setTimeout(()=>{videos[old].pause();videos[old].muted=true;switching=false},180);"""
+          new="""  try{target.currentTime=0}catch(e){}
+  target.muted=true;
+  let startedTarget=false;
+  try{await target.play();startedTarget=true}catch(e){}
+  if(!startedTarget){switching=false;return}
+  // Do not expose the incoming clip until Safari has actually decoded its first frame.
+  if('requestVideoFrameCallback' in target){
+    await new Promise(resolve=>target.requestVideoFrameCallback(()=>resolve()));
+  }else if(target.readyState<3){
+    await new Promise(resolve=>target.addEventListener('canplay',resolve,{once:true}));
+  }
+  revealLayer(index);
+  target.muted=!soundOn;
+  // Keep the outgoing decoded frame underneath throughout the crossfade.
+  setTimeout(()=>{videos[old].pause();videos[old].muted=true;switching=false},320);"""
+          if old not in s:
+              raise SystemExit('Expected transition block not found; refusing unrelated edit')
+          s=s.replace(old,new,1)
+          old2="if(video.duration-video.currentTime<=0.16){"
+          new2="if(video.duration-video.currentTime<=0.55){"
+          if old2 not in s:
+              raise SystemExit('Expected handoff threshold not found; refusing unrelated edit')
+          s=s.replace(old2,new2,1)
+          p.write_text(s)
+          PY
+      - name: Commit handoff fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Smooth TEZZ clip handoff on mobile"
+          git push
