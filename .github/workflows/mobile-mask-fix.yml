@@ -1,0 +1,35 @@
+name: Mobile edge mask fix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/mobile-mask-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Strengthen mobile right edge mask only
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text()
+          old = '@media(max-width:700px){.edge-mask{display:block}'
+          new = '@media(max-width:700px){.edge-mask{display:block}.edge-mask.right{width:24vw;background:linear-gradient(270deg,rgba(3,3,3,1) 0%,rgba(3,3,3,.98) 48%,rgba(3,3,3,.72) 72%,rgba(3,3,3,0) 100%)}'
+          if old not in s:
+              raise SystemExit('Expected mobile media rule not found')
+          p.write_text(s.replace(old, new, 1))
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || git commit -m 'Hide baked-in right-edge video copy on mobile'
+          git push
